@@ -4,7 +4,7 @@ CC = gcc
 
 SOURCES = burst.c 
 OBJECTS = $(SOURCES:.c=.o)
-TARGET = burst
+TARGET = burst outputfile.txt
 
 all:
 	gcc burst.c -o burst 
