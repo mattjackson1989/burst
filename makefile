@@ -4,10 +4,10 @@ CC = gcc
 
 SOURCES = burst.c 
 OBJECTS = $(SOURCES:.c=.o)
-TARGET = burst outputfile.txt
+TARGET = burst *.txt.
 
 all:
-	gcc burst.c -o burst 
+	gcc -pthread -o burst burst.c 
 
 .PHONY: clean
 

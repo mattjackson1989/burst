@@ -10,20 +10,66 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/types.h>
-
+#include <sys/stat.h>
+#include <pthread.h>
 #define BUF_SIZE 8192
 
+struct threadCopy {
+
+	int infd;
+	int outfd;
+	int status;
+	pthread_t tid;
+
+};
+
+void* copyfile_thread(void* args){
+	
+	struct threadCopy* filecopy = args;
+	char buffer[BUF_SIZE];
+	ssize_t ret_in, ret_out;
+	
+		while((ret_in = read(filecopy->infd, &buffer, BUF_SIZE)) > 0){
+			ret_out = write (filecopy->outfd, &buffer, (ssize_t) ret_in);
+			
+			if(ret_out != ret_in){
+				perror("write");
+				return 0;
+			}	
+		}
+
+
+
+}
 int main(int argc, char* argv[]){ 
 
-	int input_fd, output_fd;
 	ssize_t ret_in, ret_out;
 	char buffer[BUF_SIZE];
 
-	if(argc != 3){
-		printf("Usage [COMMAND] file1 file2\n");
-		return 1;
-	}	
+	
+	int copies = atoi(argv[3]);
+	struct threadCopy* fileCopy = calloc(copies,sizeof(struct threadCopy));
+	
+	for(int i = 0; i < copies; i++){
+	int input_fd = open(argv[1], O_RDONLY);	
+	
+	char filename[512];
+	int test;
+	snprintf(filename, 512, "%s.%d", argv[2], i+1);
 
+	fprintf(stderr, "%s\n", filename);
+
+	int output_fd =open(filename,(O_WRONLY | O_CREAT), (S_IRUSR | S_IWUSR)); 
+	
+
+	fileCopy[i].infd = input_fd;
+	fileCopy[i].outfd = output_fd;
+
+	int raw = pthread_create(&fileCopy[i].tid,NULL,copyfile_thread, &fileCopy[i]);
+	}
+
+
+	/*
 	// open file
 	input_fd = open(argv[1], O_RDONLY);
 	if(output_fd == -1){
@@ -49,5 +95,6 @@ int main(int argc, char* argv[]){
 
 	close(input_fd);
 	close(output_fd);
+	*/
 	return 0;
 }
