@@ -20,6 +20,7 @@ struct threadCopy {
 	int outfd;
 	int lCount;
 	FILE* infile;
+	FILE* outfile;
 	int status;
 	pthread_t tid;
 
@@ -28,14 +29,15 @@ struct threadCopy {
 void* copyfile_thread(void* args){
 	
 
-	char line[50];
+	char line[BUF_SIZE];
 	struct threadCopy* filecopy = args;
 	char buffer[BUF_SIZE];
 	ssize_t read_in, read_out;
 	
 	// i equals the number of lines to get
 	for(int i=0; i< filecopy->lCount && fgets(line, sizeof(line), filecopy->infile); i++)
-		fputs(line, stdout);
+		
+		fputs(line, filecopy->outfile);
 	/*
 	while((read_in = read(filecopy->infd, &buffer, BUF_SIZE)) > 0){
 	
@@ -71,13 +73,15 @@ int main(int argc, char* argv[]){
 		char filename[512];
 	
 		int test;
-	
-		snprintf(filename, 512, "%s%d.txt", argv[2], i+1);
+		
+		// snprintf(filename, 512, "%s%d.txt", argv[2], i+1);
 
-		fprintf(stderr, "%s\n", filename);
+		// fprintf(stderr, "%s\n", filename);
+		sprintf(filename, "%s%d", argv[2], i+1);
+		
 
 		fileCopy[i].infile = fopen(argv[1], "r");
-	
+		fileCopy[i].outfile = fopen(filename, "wb");
 		
 
 		//fileCopy[i].infd = input_fd;
