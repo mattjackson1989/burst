@@ -13,12 +13,13 @@
 #include <sys/stat.h>
 #include <pthread.h>
 #define BUF_SIZE 512
-
+#define LINELIMIT 30
 struct threadCopy {
 
 	int infd;
 	int outfd;
 	int lCount;
+	int fLines;
 	FILE* infile;
 	FILE* outfile;
 	int status;
@@ -28,16 +29,30 @@ struct threadCopy {
 // ~THREAD F(x)
 void* copyfile_thread(void* args){
 	
-
+	int linecount=0;	
+	char copyLines[LINELIMIT][BUF_SIZE];
 	char line[BUF_SIZE];
 	struct threadCopy* filecopy = args;
 	char buffer[BUF_SIZE];
 	ssize_t read_in, read_out;
+
+	int i =0;
+	while(i < LINELIMIT && fgets(copyLines[i], sizeof(copyLines[0]), filecopy->infile)){
+
+
+		if(i < 20 )
+			fputs(copyLines[i], filecopy->outfile);
 	
+		i++;
+	}
 	// i equals the number of lines to get
+
+	/*
 	for(int i=0; i< filecopy->lCount && fgets(line, sizeof(line), filecopy->infile); i++)
-		
+		linecount = i;
+		printf("%d", linecount);
 		fputs(line, filecopy->outfile);
+	*/
 	/*
 	while((read_in = read(filecopy->infd, &buffer, BUF_SIZE)) > 0){
 	
@@ -60,29 +75,46 @@ int main(int argc, char* argv[]){
 	ssize_t ret_in, ret_out;
 	char buffer[BUF_SIZE];
 	
-	
+	// How many copies	
 	int copies = atoi(argv[3]);
 	struct threadCopy* fileCopy = calloc(copies,sizeof(struct threadCopy));
-	
+
+	int lines=0;
+	FILE* input_fd = fopen(argv[1], "r");	
+	char ch;
+
+	int dividedLines;
+	// Get number of lines of file	
+	while((ch=fgetc(input_fd))!=EOF){
+		if(ch == '\n'){
+			lines++;
+		}
+	}
+	dividedLines = lines/copies;
+	printf("Each file will read %d lines\n", dividedLines);
+	printf("lines used: %d", lines);
+	fclose(input_fd);
+
 	// SPAWN THE THREADS AND GIVE WORK
 	for(int i = 0; i < copies; i++){
-		int input_fd = open(argv[1], O_RDONLY);	
-		
+
 		fileCopy[i].lCount =atoi( argv[4]);
 
 		char filename[512];
-	
-		int test;
 		
 		// snprintf(filename, 512, "%s%d.txt", argv[2], i+1);
 
 		// fprintf(stderr, "%s\n", filename);
 		sprintf(filename, "%s%d", argv[2], i+1);
-		
+				
 
+		// Open file locations
 		fileCopy[i].infile = fopen(argv[1], "r");
 		fileCopy[i].outfile = fopen(filename, "wb");
 		
+
+		// assign number of total lines of file
+		fileCopy[i].fLines = lines; 
 
 		//fileCopy[i].infd = input_fd;
 		//fileCopy[i].outfd = output_fd;
