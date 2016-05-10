@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <pthread.h>
 #define BUF_SIZE 512
-#define LINELIMIT 30
+
 struct threadCopy {
 
 	
@@ -43,17 +43,18 @@ struct threadCopy {
 // ~THREAD F(x)
 void* copyfile_thread(void* args){
 	
-	int linecount=0;	
-	char copyLines[LINELIMIT][BUF_SIZE];
+	int linecount = 0;	
+	
 	char line[BUF_SIZE];
 	struct threadCopy* filecopy = args;
+	char copyLines[500][BUF_SIZE];
 	char buffer[BUF_SIZE];
 	ssize_t read_in, read_out;
 
 	int i =0;
 
 		
-	while(i < LINELIMIT && fgets(copyLines[i], sizeof(copyLines[0]), filecopy->infile)){
+	while(i < 50 && fgets(copyLines[i], sizeof(copyLines[0]), filecopy->infile)){
 
 
 		if(i <= filecopy->finish && i >= filecopy->start )
@@ -82,6 +83,7 @@ void* copyfile_thread(void* args){
 	*/
 	printf("\nProcessed Thread\n");
 	fclose(filecopy->infile);
+	fclose(filecopy->outfile);
 }
 
 // ~MAIN~
@@ -95,7 +97,7 @@ int main(int argc, char* argv[]){
 	int copies = atoi(argv[3]);
 	struct threadCopy* fileCopy = calloc(copies,sizeof(struct threadCopy));
 
-	int lines=0;
+	int lines = 0;
 	FILE* input_fd = fopen(argv[1], "r");	
 	char ch;
 
@@ -106,8 +108,8 @@ int main(int argc, char* argv[]){
 			lines++;
 		}
 	}
-	dividedLines = lines/copies;
-	printf("Each file will read %d lines\n", dividedLines);
+	
+	
 	printf("lines used: %d", lines);
 	fclose(input_fd);
 
@@ -116,11 +118,11 @@ int main(int argc, char* argv[]){
 
 		fileCopy[i].lCount =atoi( argv[4]);
 		fileCopy[i].linesToWrite = atoi( argv[4]);
-
+		//fileCopy[i].fLines = 500; 
 		// first case
 		if(i == 0){
 			fileCopy[i].start = 0;
-			fileCopy[i].finish += fileCopy[i].linesToWrite;
+			fileCopy[i].finish = fileCopy[i].linesToWrite;
 		}
 		if(i >0){
 			fileCopy[i].start = fileCopy[i].linesToWrite * i;
@@ -155,6 +157,8 @@ int main(int argc, char* argv[]){
 		if(err !=0){
 			printf("\nCan't create thread: [%s]", strerror(err));
 		}
+		
+		
 	}
 	/*
 	// open file
@@ -185,5 +189,6 @@ int main(int argc, char* argv[]){
 	*/
 
 	sleep(5);
+	free(fileCopy);
 	return 0;
 }

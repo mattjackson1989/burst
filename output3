@@ -1,10 +1,10 @@
-unset EDITMOTD
-unset RAMRUN
-unset RAMLOCK
-# Don't unset RAMSHM and RAMTMP for now.
+		if [ "$RUNLEVEL" ] && [ "$PREVLEVEL" ] ; then
+		    VERBOSE="no"
+		fi
+		;;
+	esac
+    done
+fi
 
-# Parse kernel command line
-if [ -r /proc/cmdline ]; then
-    for ARG in $(cat /proc/cmdline); do
-        case $ARG in
-
+# But allow both rcS and the kernel options 'quiet' to be overrided
+# when INIT_VERBOSE=yes is used as well.

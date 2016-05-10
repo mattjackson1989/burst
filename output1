@@ -9,3 +9,13 @@ TMPTIME=0
 SULOGIN=no
 DELAYLOGIN=no
 UTC=yes
+VERBOSE=no
+FSCKFIX=no
+
+# Source conffile
+if [ -f /etc/default/rcS ]; then
+    . /etc/default/rcS
+fi
+
+# Unset old unused options
+unset EDITMOTD
