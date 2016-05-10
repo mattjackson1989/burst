@@ -16,9 +16,11 @@
 #define LINELIMIT 30
 struct threadCopy {
 
+	
 	int infd;
 	int outfd;
 	int lCount;
+	int copies;
 	int fLines;
 	FILE* infile;
 	FILE* outfile;
@@ -114,7 +116,8 @@ int main(int argc, char* argv[]){
 		
 
 		// assign number of total lines of file
-		fileCopy[i].fLines = lines; 
+		fileCopy[i].fLines = lines;
+		fileCopy[i].copies = copies; 
 
 		//fileCopy[i].infd = input_fd;
 		//fileCopy[i].outfd = output_fd;
