@@ -1,0 +1,10 @@
+unset EDITMOTD
+unset RAMRUN
+unset RAMLOCK
+# Don't unset RAMSHM and RAMTMP for now.
+
+# Parse kernel command line
+if [ -r /proc/cmdline ]; then
+    for ARG in $(cat /proc/cmdline); do
+        case $ARG in
+

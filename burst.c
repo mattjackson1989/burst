@@ -19,12 +19,24 @@ struct threadCopy {
 	
 	int infd;
 	int outfd;
+	//current line count
 	int lCount;
+	// copies to make
 	int copies;
+	// actually lines of current file
 	int fLines;
+	// lines to write
+	int linesToWrite;
+	// start line
+	int start;
+	// finish line
+	int finish;
+	// File directories
 	FILE* infile;
 	FILE* outfile;
+	// status
 	int status;
+	// pthread_t id
 	pthread_t tid;
 
 };
@@ -39,10 +51,12 @@ void* copyfile_thread(void* args){
 	ssize_t read_in, read_out;
 
 	int i =0;
+
+		
 	while(i < LINELIMIT && fgets(copyLines[i], sizeof(copyLines[0]), filecopy->infile)){
 
 
-		if(i < 20 )
+		if(i <= filecopy->finish && i >= filecopy->start )
 			fputs(copyLines[i], filecopy->outfile);
 	
 		i++;
@@ -101,6 +115,20 @@ int main(int argc, char* argv[]){
 	for(int i = 0; i < copies; i++){
 
 		fileCopy[i].lCount =atoi( argv[4]);
+		fileCopy[i].linesToWrite = atoi( argv[4]);
+
+		// first case
+		if(i == 0){
+			fileCopy[i].start = 0;
+			fileCopy[i].finish += fileCopy[i].linesToWrite;
+		}
+		if(i >0){
+			fileCopy[i].start = fileCopy[i].linesToWrite * i;
+			fileCopy[i].finish += fileCopy[i].linesToWrite *(i + 1);
+
+			printf("%d", fileCopy[i].start);
+
+		}
 
 		char filename[512];
 		
