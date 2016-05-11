@@ -1,0 +1,17 @@
+.\" Manpage for burst
+.\" Contact mattjackson@github.com to correct entries.
+.TH man 8 "05/11/2016" "1.0" "burst man page"
+.SH NAME
+burst \- burst a files lines into multiple files
+.SH SYNOPSIS
+burst [INFILE] [OUTFILE] [COPIES] [LINES]
+.SH DESCRIPTION
+burst uses pthreading to divide a file into multiple files based on how many copies you wish to have. The default lines to break the file apart is 500, though this can be modified with the 5th argument of the command.
+.SH OPTIONS
+burst does not support multiple options yet.
+.SH SEE ALSO
+split() csplit()
+.SH BUGS
+Burst currently cannot take less than or too many arguments or it will cause a segmantation fault.
+.SH AUTHOR
+Matt Jackson (mcj16@uakron.edu) 2016(c)
